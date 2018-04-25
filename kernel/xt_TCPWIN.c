@@ -44,12 +44,26 @@ static unsigned int tcpwin_tg(struct sk_buff *skb,
 	return XT_CONTINUE;
 }
 
+static int tcpwin_check(const struct xt_tgchk_param *par)
+{
+	if (strcmp(par->table, "mangle")) {
+		printk(KERN_WARNING
+		       "TCPWIN: can only be called from"
+		       "\"mangle\" table, not \"%s\"\n",
+		       par->table);
+		return -EINVAL;
+	}
+
+	return 0;
+}
+
 static struct xt_target tcpwin_tg_reg __read_mostly = {
 	.name = "TCPWIN",
 	.family = NFPROTO_IPV4,
 	.proto = IPPROTO_TCP,
 	.target = tcpwin_tg,
 	.targetsize = sizeof(struct xt_TCPWIN_info),
+	.checkentry = tcpwin_check,
 	.table = "mangle",
 	.me = THIS_MODULE,
 };
