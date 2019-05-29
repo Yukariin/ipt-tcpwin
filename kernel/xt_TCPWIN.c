@@ -31,15 +31,17 @@ static unsigned int tcpwin_tg(struct sk_buff *skb,
 	iph = ip_hdr(skb);
 	tcph = tcp_hdr(skb);
 
-	tcph->window = htons(info->size);
+	if (iph && iph->protocol) {
+		tcph->window = htons(info->size);
 
-	offset = skb_transport_offset(skb);
-	len = skb->len - offset;
-	tcph->check = 0;
-	tcph->check =
-		csum_tcpudp_magic(iph->saddr, iph->daddr, len, IPPROTO_TCP,
-				  csum_partial((char *)tcph, len, 0));
-	skb->ip_summed = CHECKSUM_NONE;
+		offset = skb_transport_offset(skb);
+		len = skb->len - offset;
+		tcph->check = 0;
+		tcph->check = csum_tcpudp_magic(
+			(iph->saddr), (iph->daddr), len, IPPROTO_TCP,
+			csum_partial((char *)tcph, len, 0));
+		skb->ip_summed = CHECKSUM_NONE;
+	}
 
 	return XT_CONTINUE;
 }
