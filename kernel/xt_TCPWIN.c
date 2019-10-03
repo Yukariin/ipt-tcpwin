@@ -22,7 +22,7 @@ static unsigned int tcpwin_tg(struct sk_buff *skb,
 	struct tcphdr *tcph;
 	int offset, len;
 
-	if (!skb_make_writable(skb, skb->len))
+	if (skb_ensure_writable(skb, skb->len))
 		return NF_DROP;
 
 	if (skb_linearize(skb))
