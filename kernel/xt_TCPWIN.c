@@ -3,7 +3,6 @@
 #include <linux/module.h>
 #include <linux/skbuff.h>
 #include <linux/ip.h>
-#include <linux/ipv6.h>
 #include <linux/tcp.h>
 #include <net/checksum.h>
 
@@ -11,8 +10,8 @@
 
 #include "xt_TCPWIN.h"
 
+MODULE_DESCRIPTION("Xtables: TCPWIN field modification target");
 MODULE_LICENSE("GPL");
-MODULE_ALIAS("ipt_TCPWIN");
 
 static unsigned int tcpwin_tg(struct sk_buff *skb,
 			      const struct xt_action_param *par)
@@ -30,7 +29,6 @@ static unsigned int tcpwin_tg(struct sk_buff *skb,
 
 	iph = ip_hdr(skb);
 	tcph = tcp_hdr(skb);
-
 	if (iph && iph->protocol) {
 		tcph->window = htons(info->size);
 
@@ -82,3 +80,4 @@ static void __exit tcpwin_tg_exit(void)
 
 module_init(tcpwin_tg_init);
 module_exit(tcpwin_tg_exit);
+MODULE_ALIAS("ipt_TCPWIN");
